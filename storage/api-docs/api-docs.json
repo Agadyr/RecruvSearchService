@@ -1,0 +1,240 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Catalog API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/search": {
+            "post": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Search articles in index",
+                "description": "Search for articles by given parameters",
+                "operationId": "a482a76ad8ea6fa97b1786c44df557bd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SearchArticlesRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Article"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибки валидации"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reIndex": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Load all products to Articles Index",
+                "description": "Add to index all products",
+                "operationId": "51d1fb10d0cffa50f7069c054d1971fc",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Good response"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Bad Request"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "SearchArticlesRequest": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Описание статьи"
+                    },
+                    "name": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 19.99
+                    },
+                    "category": {
+                        "type": "string",
+                        "example": "Одежда"
+                    },
+                    "sub_category": {
+                        "type": "string",
+                        "example": "Верхняя одежда"
+                    },
+                    "colors": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "sizes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "gender": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "sortByPrice": {
+                        "type": "boolean",
+                        "example": 1
+                    },
+                    "sortByName": {
+                        "type": "boolean",
+                        "example": 0
+                    }
+                },
+                "type": "object"
+            },
+            "Article": {
+                "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "price",
+                    "category"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Худи"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Описание худи"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 19.99
+                    },
+                    "previousPrice": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 24.99
+                    },
+                    "sub_category": {
+                        "type": "string",
+                        "example": "Верхняя одежда"
+                    },
+                    "category": {
+                        "type": "string",
+                        "example": "Одежда"
+                    },
+                    "colors": {
+                        "type": "string"
+                    },
+                    "sizes": {
+                        "type": "string"
+                    },
+                    "gender": {
+                        "type": "string"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Articles",
+            "description": "Articles"
+        }
+    ]
+}
