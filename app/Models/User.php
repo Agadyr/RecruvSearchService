@@ -45,6 +45,6 @@ class User extends Authenticatable
 
     public function searchParams()
     {
-        $this->hasMany(SearchParams::class);
+        return $this->hasMany(SearchParams::class);
     }
 }

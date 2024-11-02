@@ -5,11 +5,38 @@ namespace App\Services;
 use App\Models\SearchParams;
 use App\Models\User;
 use http\Message;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class UserService
 {
+    public function createMessage($request)
+    {
+        $user = $this->findUserByEmail($request->get('email'));
+
+        SearchParams::create([
+            'params' => $request->get('message_params'),
+            'user_id' => $user->id
+        ]);
+
+    }
+
+    public function giveSuggestionBySearchParams($request)
+    {
+        $user = $this->findUserByEmail($request->get('email'));
+        return $user->searchParams;
+    }
+    public function findUserByEmail($email)
+    {
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => "User with this $email does not exist"]);
+        }
+
+        return $user;
+    }
 
     public function createUsers(array $users): void
     {
@@ -36,20 +63,5 @@ class UserService
         }
 
         return response()->json(['error' => 'Failed to get users'], 400);
-    }
-
-    public function createMessage($request)
-    {
-        $user = User::where('email', $request->user_email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User does not exist']);
-        }
-
-        SearchParams::create([
-            'params' => $request->get('message_params'),
-            'user_id' => $user->id
-        ]);
-
     }
 }

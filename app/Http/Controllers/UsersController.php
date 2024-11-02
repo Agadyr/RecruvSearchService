@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Users\CreateSuggestionsRequest;
 use App\Http\Requests\Users\GiveSuggestionRequest;
 use App\Services\UserService;
-use http\Env\Request;
 
 class UsersController extends Controller
 {
@@ -16,14 +15,14 @@ class UsersController extends Controller
         $this->userService = $userService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
         $users = $this->userService->getAllUsers();
 
         return response()->json($users);
     }
 
-    public function store(Request $request)
+    public function store()
     {
         //Here we get new users and put them to Users model
     }
@@ -37,6 +36,9 @@ class UsersController extends Controller
 
     public function giveSuggestions(GiveSuggestionRequest $request)
     {
+        $user = $this->userService->giveSuggestionBySearchParams($request);
+
+        return response()->json($user);
 
     }
 }
