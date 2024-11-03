@@ -12,7 +12,7 @@ class VacanciesService
         if ($instance->getElasticSearchClient()->indices()->exists(['index' => 'vacancies'])) {
             $instance->getElasticSearchClient()->indices()->delete(['index' => 'vacancies']);
         }
-        $vacancies = $this->getVacanciesFromCatalog();
+        $vacancies = $this->getVacancies();
         \App\Models\Article::createIndex();
         \App\Models\Article::addAllVacanciesToIndex($vacancies);
     }
@@ -78,7 +78,7 @@ class VacanciesService
         return $this->findProductsByIds(($ids));
     }
 
-    public function getVacanciesFromCatalog()
+    public function getVacancies()
     {
         $response = Http::get('http://localhost:3002/api/allVacancies');
 
@@ -92,23 +92,6 @@ class VacanciesService
         }
 
         return response()->json(['error' => 'Failed to fetch vacancies'], 400);
-    }
-
-    public function findProductsByIds($ids)
-    {
-        $response = Http::post('http://localhost:8081/api/products/find', [
-            'id' => $ids
-        ]);
-
-        if ($response->successful()) {
-            $products = $response->json();
-            if (isset($products['data'])) {
-                return $products['data'];
-            }
-            return response()->json(['error' => 'No products found in response'], 404);
-        }
-
-        return response()->json(['error' => 'Failed to fetch products'], 400);
     }
 
 }

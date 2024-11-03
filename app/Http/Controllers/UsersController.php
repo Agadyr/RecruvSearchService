@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Users\CreateSuggestionsRequest;
 use App\Http\Requests\Users\GiveSuggestionRequest;
+use App\Models\User;
 use App\Services\UserService;
 
 class UsersController extends Controller
@@ -36,9 +37,9 @@ class UsersController extends Controller
 
     public function giveSuggestions(GiveSuggestionRequest $request)
     {
-        $user = $this->userService->giveSuggestionBySearchParams($request);
+        $suggestedVacancies = $this->userService->giveSuggestionBySearchParams($request);
 
-        return response()->json($user);
+        return response()->json($suggestedVacancies);
 
     }
 }

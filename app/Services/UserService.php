@@ -2,18 +2,16 @@
 
 namespace App\Services;
 
+use App\Exceptions\UserException;
 use App\Models\SearchParams;
 use App\Models\User;
-use http\Message;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class UserService
 {
     public function createMessage($request)
     {
-        $user = $this->findUserByEmail($request->get('email'));
+        $user = $this->findUserByEmail($request->get('user_email'));
 
         SearchParams::create([
             'params' => $request->get('message_params'),
@@ -25,17 +23,69 @@ class UserService
     public function giveSuggestionBySearchParams($request)
     {
         $user = $this->findUserByEmail($request->get('email'));
-        return $user->searchParams;
-    }
-    public function findUserByEmail($email)
-    {
-        $user = User::where('email', $email)->first();
 
-        if (!$user) {
-            return response()->json(['message' => "User with this $email does not exist"]);
+        if (empty($user->searchParams)) {
+            return response()->json(['message' => 'No search history available for recommendations']);
         }
 
-        return $user;
+        $mustQueries = [];
+        $shouldQueries = [];
+
+        foreach ($user->searchParams as $searchParam) {
+            if (!empty($searchParam->params)) {
+                $mustQueries[] = [
+                    'multi_match' => [
+                        'query' => $searchParam->params,
+                        'fields' => ['name', 'skills']
+                    ]
+                ];
+
+                $shouldQueries[] = [
+                    'multi_match' => [
+                        'query' => $searchParam->params,
+                        'fields' => ['name^10', 'skills']
+                    ]
+                ];
+            }
+        }
+
+        $params = [
+            'index' => 'vacancies',
+            'size' => 1000,
+            'body' => [
+                'query' => [
+                    'bool' => [
+                        'must' => $mustQueries, // Обязательные условия
+                        'should' => $shouldQueries // Дополнительные условия
+                    ]
+                ]
+            ]
+        ];
+
+        $suggestions = \App\Models\Article::complexSearch($params);
+
+        $suggestedVacancies = $suggestions->toArray();
+
+        \Log::info('Suggested Vacancies:', $suggestedVacancies);
+        if (empty($suggestedVacancies)) {
+            return response()->json(['message' => 'No recommendations found based on search history']);
+        }
+
+        return $suggestedVacancies;
+    }
+
+
+    public function getAllUsers()
+    {
+        $res = Http::get('http://localhost:3002/api/allUsers');
+
+        if ($res->successful() && $res->json()) {
+            $users = $res->json();
+            $this->createUsers($users);
+            return response()->json($users);
+        }
+
+        throw UserException::failedGetUsers();
     }
 
     public function createUsers(array $users): void
@@ -52,16 +102,14 @@ class UserService
         }
     }
 
-    public function getAllUsers()
+    public function findUserByEmail($email)
     {
-        $res = Http::get('http://localhost:3002/api/allUsers');
+        $user = User::where('email', $email)->first();
 
-        if ($res->successful() && $res->json()) {
-            $users = $res->json();
-            $this->createUsers($users);
-            return response()->json($users);
+        if (!$user) {
+            throw UserException::userNotFound($email);
         }
 
-        return response()->json(['error' => 'Failed to get users'], 400);
+        return $user;
     }
 }

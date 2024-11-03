@@ -27,4 +27,13 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof UserException) {
+            return response()->json(['message' => $exception->getMessage()], $exception->getCode() ?: 400);
+        }
+
+        return parent::render($request, $exception);
+    }
 }
