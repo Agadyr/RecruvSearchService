@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ArticlesController;
+use App\Http\Controllers\VacanciesController;
 use App\Http\Controllers\UsersController;
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +14,8 @@ use App\Http\Controllers\UsersController;
 |
 */
 
-Route::get('/reIndex', [ArticlesController::class, 'reIndexArticles']);
-Route::post('/search',[ArticlesController::class, 'searchInArticlesIndex']);
+Route::get('/createOrResetIndex', [VacanciesController::class, 'ReCreateVacanciesIndex']);
+Route::post('/search',[VacanciesController::class, 'searchInArticlesIndex']);
 
 Route::get('/updateAllUsers', [UsersController::class, 'index']);
 Route::post('/createUser', [UsersController::class, 'store']);

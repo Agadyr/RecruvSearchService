@@ -5,6 +5,7 @@ namespace App\Models;
 use Elasticquent\ElasticquentTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 /**
  * @OA\Schema(
  *     schema="Article",
@@ -27,7 +28,7 @@ class Article extends Model
 {
     use HasFactory, ElasticquentTrait;
 
-    protected $fillable = ['id','title', 'body', 'tags'];
+    protected $fillable = ['id', 'title', 'body', 'tags'];
 
     protected $mappingProperties = [
         'id' => [
@@ -37,80 +38,48 @@ class Article extends Model
             'type' => 'text',
             'analyzer' => 'standard',
         ],
-        'description' => [
-            'type' => 'text',
-            'analyzer' => 'standard',
-        ],
-        'price' => [
+        'salary_from' => [
             'type' => 'float',
         ],
-        'previousPrice' => [
+        'salary_to' => [
             'type' => 'float',
         ],
-        'sub_category' => [
+        'salary_type' => [
             'type' => 'text',
             'analyzer' => 'standard',
         ],
-        'category' => [
+        'address' => [
             'type' => 'text',
             'analyzer' => 'standard',
         ],
-        'colors' => [
-            'type' => 'nested',
-            'properties' => [
-                'id' => [
-                    'type' => 'integer',
-                ],
-                'color' => [
-                    'type' => 'text',
-                    'analyzer' => 'standard',
-                ],
-            ],
+        'skills' => [
+            'type' => 'text',
+            'analyzer' => 'standard',
         ],
-        'sizes' => [
-            'type' => 'nested',
-            'properties' => [
-                'id' => [
-                    'type' => 'integer',
-                ],
-                'size' => [
-                    'type' => 'text',
-                    'analyzer' => 'standard',
-                ],
-            ],
+        'createdAt' => [
+            'type' => 'text',
+            'analyzer' => 'standard',
         ],
-        'gender' => [
-            'type' => 'nested',
-            'properties' => [
-                'id' => [
-                    'type' => 'integer',
-                ],
-                'gender' => [
-                    'type' => 'text',
-                    'analyzer' => 'standard',
-                ],
-            ],
+        'updatedAt' => [
+            'type' => 'text',
+            'analyzer' => 'standard',
         ],
-        'images' => [
-            'type' => 'nested',
-            'properties' => [
-                'id' => [
-                    'type' => 'integer',
-                ],
-                'path' => [
-                    'type' => 'text'
-                ],
-                'product_id' => [
-                    'type' => 'integer',
-                ],
-                'color_id' => [
-                    'type' => 'integer',
-                ],
-            ],
+        'cityId' => [
+            'type' => 'integer',
         ],
+        'specializationId' => [
+            'type' => 'integer',
+        ],
+        'experienceId' => [
+            'type' => 'integer',
+        ],
+        'employmentTypeId' => [
+            'type' => 'integer',
+        ],
+
     ];
 
-    const INDEX_NAME = 'articles';
+    const INDEX_NAME = 'vacancies';
 
     public static function createIndex()
     {
@@ -129,40 +98,42 @@ class Article extends Model
         ]);
     }
 
-    public static function addAllProductsToIndex($products)
+    public static function addAllVacanciesToIndex($products)
     {
         $client = (new \App\Models\Article)->getElasticSearchClient();
-        foreach ($products as $product) {
-            \Log::info('Индексируем продукт: ' . json_encode($product));
+        foreach ($products as $vacancies) {
+            \Log::info('Индексируем продукт: ' . json_encode($vacancies));
             try {
                 $params = [
                     'index' => self::INDEX_NAME,
-                    'id' => $product['id'],
+                    'id' => $vacancies['id'],
                     'type' => '_doc',
                     'body' => [
-                        'id' => $product['id'],
-                        'name' => $product['name'],
-                        'description' => $product['description'],
-                        'price' => $product['price'],
-                        'previousPrice' => $product['previousPrice'],
-                        'sub_category' => $product['sub_category'],
-                        'category' => $product['category'],
-                        'colors' => $product['colors'],
-                        'sizes' => $product['sizes'],
-                        'gender' => $product['gender'],
-                        'images' => $product['images'],
+                        'id' => $vacancies['id'],
+                        'name' => $vacancies['name'],
+                        'salary_from' => $vacancies['salary_from'],
+                        'salary_to' => $vacancies['salary_to'],
+                        'salary_type' => $vacancies['salary_type'],
+                        'address' => $vacancies['address'],
+                        'skills' => $vacancies['skills'],
+                        'createdAt' => $vacancies['createdAt'],
+                        'updatedAt' => $vacancies['updatedAt'],
+                        'cityId' => $vacancies['cityId'],
+                        'specializationId' => $vacancies['specializationId'],
+                        'experienceId' => $vacancies['experienceId'],
+                        'employmentTypeId' => $vacancies['employmentTypeId'],
                     ],
                 ];
 
                 $client->index($params);
-                \Log::info('Продукт с ID ' . $product['id'] . ' успешно индексирован.');
+                \Log::info('Вакансия с ID ' . $vacancies['id'] . ' успешно индексирован.');
             } catch (\Exception $e) {
-                \Log::error("Ошибка индексации продукта с ID {$product['id']}: {$e->getMessage()}");
+                \Log::error("Ошибка индексации продукта с ID {$vacancies['id']}: {$e->getMessage()}");
             }
         }
 
         return response()->json([
-            'message' => 'Все данные из каталога были загружены в индекс Articles',
+            'message' => 'Все данные были загружены в индекс Vacancies',
         ]);
     }
 

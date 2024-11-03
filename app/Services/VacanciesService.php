@@ -4,17 +4,17 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 
-class ArticleService
+class VacanciesService
 {
-    public function resetArticleIndex(): void
+    public function resetIndexVacancies(): void
     {
         $instance = new \App\Models\Article;
-        if ($instance->getElasticSearchClient()->indices()->exists(['index' => 'articles'])) {
-            $instance->getElasticSearchClient()->indices()->delete(['index' => 'articles']);
+        if ($instance->getElasticSearchClient()->indices()->exists(['index' => 'vacancies'])) {
+            $instance->getElasticSearchClient()->indices()->delete(['index' => 'vacancies']);
         }
-        $products = $this->getProductsFromCatalog();
+        $vacancies = $this->getVacanciesFromCatalog();
         \App\Models\Article::createIndex();
-        \App\Models\Article::addAllProductsToIndex($products);
+        \App\Models\Article::addAllVacanciesToIndex($vacancies);
     }
 
     public function searchByParams(array $params)
@@ -78,20 +78,20 @@ class ArticleService
         return $this->findProductsByIds(($ids));
     }
 
-    public function getProductsFromCatalog()
+    public function getVacanciesFromCatalog()
     {
-        $response = Http::get('http://localhost:8081/api/products');
+        $response = Http::get('http://localhost:3002/api/allVacancies');
 
-        if ($response->successful()) {
-            $products = $response->json();
-            if (isset($products['data'])) {
-                return $products['data'];
+        if ($response->successful() && $response->json()) {
+            $vacancies = $response->json();
+            if ($vacancies) {
+                return $vacancies;
             }
 
-            return response()->json(['error' => 'No products found in response'], 404);
+            return response()->json(['error' => 'No vacancies found in response'], 404);
         }
 
-        return response()->json(['error' => 'Failed to fetch products'], 400);
+        return response()->json(['error' => 'Failed to fetch vacancies'], 400);
     }
 
     public function findProductsByIds($ids)

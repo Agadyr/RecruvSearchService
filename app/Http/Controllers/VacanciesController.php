@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchArticlesRequest;
-use App\Services\ArticleService;
+use App\Services\VacanciesService;
 use Illuminate\Http\Request;
 
 /**
  * @OA\Info(title="Catalog API", version="1.0.0")
  */
-class ArticlesController extends Controller
+class VacanciesController extends Controller
 {
     protected $articleService;
 
-    public function __construct(ArticleService $articleService)
+    public function __construct(VacanciesService $articleService)
     {
         $this->articleService = $articleService;
     }
@@ -76,9 +76,9 @@ class ArticlesController extends Controller
      *     )
      * )
      */
-    public function reIndexArticles()
+    public function ReCreateVacanciesIndex()
     {
-        $this->articleService->resetArticleIndex();
+        $this->articleService->resetIndexVacancies();
         return response()->json(['success' => 'Has been uploaded all products']);
     }
 }
