@@ -25,6 +25,7 @@ Route::prefix('users')->group(function () {
 
 
 Route::prefix('vacancies')->group(function () {
+    Route::post('addNewVacancyToIndex', [VacanciesController::class, 'create']);
     Route::get('/createOrResetIndex', [VacanciesController::class, 'reCreateVacanciesIndex']);
     Route::get('/searchVacanciesByParams', [VacanciesController::class, 'search']);
 });

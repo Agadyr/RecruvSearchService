@@ -6,25 +6,7 @@ use Elasticquent\ElasticquentTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @OA\Schema(
- *     schema="Article",
- *     type="object",
- *     required={"id", "name", "description", "price", "category"},
- *     @OA\Property(property="id", type="integer", example=1),
- *     @OA\Property(property="name", type="string", example="Худи"),
- *     @OA\Property(property="description", type="string", example="Описание худи"),
- *     @OA\Property(property="price", type="number", format="float", example=19.99),
- *     @OA\Property(property="previousPrice", type="number", format="float", example=24.99),
- *     @OA\Property(property="sub_category", type="string", example="Верхняя одежда"),
- *     @OA\Property(property="category", type="string", example="Одежда"),
- *     @OA\Property(property="colors", type="string"),
- *     @OA\Property(property="sizes", type="string"),
- *     @OA\Property(property="gender", type="string"),
- *     @OA\Property(property="images", type="array", @OA\Items(type="object")),
- * )
- */
-class Article extends Model
+class Vacancy extends Model
 {
     use HasFactory, ElasticquentTrait;
 
@@ -58,11 +40,11 @@ class Article extends Model
         ],
         'createdAt' => [
             'type' => 'date',
-            'format' => "yyyy-MM-dd\\'T\\'HH:mm:ss||epoch_millis"
+            'format' => "strict_date_optional_time||epoch_millis"
         ],
         'updatedAt' => [
             'type' => 'date',
-            'format' => "yyyy-MM-dd\\'T\\'HH:mm:ss||epoch_millis"
+            'format' => "strict_date_optional_time||epoch_millis"
         ],
         'cityId' => [
             'type' => 'integer',
@@ -100,7 +82,7 @@ class Article extends Model
 
     public static function addAllVacanciesToIndex($products)
     {
-        $client = (new \App\Models\Article)->getElasticSearchClient();
+        $client = (new \App\Models\Vacancy)->getElasticSearchClient();
         foreach ($products as $vacancies) {
             \Log::info('Индексируем продукт: ' . json_encode($vacancies));
             try {

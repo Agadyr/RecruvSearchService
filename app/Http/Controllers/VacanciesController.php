@@ -28,4 +28,9 @@ class VacanciesController extends Controller
         $this->vacanciesService->resetIndexVacancies();
         return response()->json(['success' => 'Has been uploaded all products']);
     }
+
+    public function create(Request $request)
+    {
+        return response()->json($request->all());
+    }
 }

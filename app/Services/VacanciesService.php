@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Vacancy;
 use Illuminate\Support\Facades\Http;
 
 class VacanciesService
@@ -9,13 +10,13 @@ class VacanciesService
     protected array $sorts = ['sortByName', 'sortBySalaryFrom', 'sortByCreatedAt', 'sortByUpdatedAt'];
     public function resetIndexVacancies(): void
     {
-        $instance = new \App\Models\Article;
+        $instance = new \App\Models\Vacancy;
         if ($instance->getElasticSearchClient()->indices()->exists(['index' => 'vacancies'])) {
             $instance->getElasticSearchClient()->indices()->delete(['index' => 'vacancies']);
         }
         $vacancies = $this->getVacancies();
-        \App\Models\Article::createIndex();
-        \App\Models\Article::addAllVacanciesToIndex($vacancies);
+        \App\Models\Vacancy::createIndex();
+        \App\Models\Vacancy::addAllVacanciesToIndex($vacancies);
     }
 
     public function searchByParams(array $params)
@@ -42,7 +43,7 @@ class VacanciesService
             }
         }
         $params = [
-            'index' => \App\Models\Article::INDEX_NAME,
+            'index' => \App\Models\Vacancy::INDEX_NAME,
             'size' => 1000,
             'body' => [
                 'query' => [
@@ -54,7 +55,7 @@ class VacanciesService
             ],
         ];
 
-        $articles = \App\Models\Article::complexSearch($params);
+        $articles = \App\Models\Vacancy::complexSearch($params);
 
         $arrayArticles = $articles->toArray();
         if (!isset($arrayArticles[0])) {
