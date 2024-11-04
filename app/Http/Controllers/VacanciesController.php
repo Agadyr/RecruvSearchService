@@ -2,83 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SearchArticlesRequest;
+use App\Http\Requests\SearchVacanciesRequest;
 use App\Services\VacanciesService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * @OA\Info(title="Catalog API", version="1.0.0")
- */
 class VacanciesController extends Controller
 {
-    protected $articleService;
+    protected $vacanciesService;
 
-    public function __construct(VacanciesService $articleService)
+    public function __construct(VacanciesService $vacanciesService)
     {
-        $this->articleService = $articleService;
+        $this->vacanciesService = $vacanciesService;
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/search",
-     *     tags={"Articles"},
-     *     summary="Search articles in index",
-     *     description="Search for articles by given parameters",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/SearchArticlesRequest")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Article")),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation errors",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Ошибки валидации"),
-     *             @OA\Property(property="errors", type="object")
-     *         )
-     *     )
-     * )
-     */
-
-    public function searchInArticlesIndex(SearchArticlesRequest $searchArticlesRequest)
+    public function search(SearchVacanciesRequest $searchVacanciesRequest)
     {
-        $params = $searchArticlesRequest->validated();
-        $articles = $this->articleService->searchByParams($params);
-        return response()->json($articles);
+        $params = $searchVacanciesRequest->validated();
+        $vacancies = $this->vacanciesService->searchByParams($params);
+        return response()->json($vacancies);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/reIndex",
-     *     tags={"Articles"},
-     *     summary="Load all products to Articles Index",
-     *     description="Add to index all products",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful response",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="string", example="Good response"),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad request",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Bad Request"),
-     *             @OA\Property(property="errors", type="object")
-     *         )
-     *     )
-     * )
-     */
-    public function ReCreateVacanciesIndex()
+    public function reCreateVacanciesIndex(): JsonResponse
     {
-        $this->articleService->resetIndexVacancies();
+        $this->vacanciesService->resetIndexVacancies();
         return response()->json(['success' => 'Has been uploaded all products']);
     }
 }

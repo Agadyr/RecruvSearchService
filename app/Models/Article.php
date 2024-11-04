@@ -57,12 +57,12 @@ class Article extends Model
             'analyzer' => 'standard',
         ],
         'createdAt' => [
-            'type' => 'text',
-            'analyzer' => 'standard',
+            'type' => 'date',
+            'format' => "yyyy-MM-dd\\'T\\'HH:mm:ss||epoch_millis"
         ],
         'updatedAt' => [
-            'type' => 'text',
-            'analyzer' => 'standard',
+            'type' => 'date',
+            'format' => "yyyy-MM-dd\\'T\\'HH:mm:ss||epoch_millis"
         ],
         'cityId' => [
             'type' => 'integer',

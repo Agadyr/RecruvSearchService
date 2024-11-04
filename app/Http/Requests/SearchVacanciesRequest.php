@@ -23,7 +23,7 @@ use Illuminate\Validation\ValidationException;
  *     @OA\Property(property="sortByName", type="boolean", example=0)
  * )
  */
-class SearchArticlesRequest extends FormRequest
+class SearchVacanciesRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator)
     {
@@ -42,16 +42,22 @@ class SearchArticlesRequest extends FormRequest
     {
         return [
             'id' => 'sometimes|numeric',
-            'description' => 'sometimes|string|max:255',
-            'name' => 'sometimes|array',
-            'price' => 'sometimes|numeric',
-            'category' => 'sometimes|string',
-            'sub_category' => 'sometimes|string',
-            'colors' => 'sometimes|array',
-            'sizes' => 'sometimes|array',
-            'gender' => 'string|array',
-            'sortByPrice' => 'nullable|boolean',
-            'sortByName' => 'nullable|boolean'
+            'name' => 'sometimes|string|max:255',
+            'salary_from' => 'sometimes|numeric',
+            'salary_to' => 'sometimes|numeric',
+            'salary_type' => 'sometimes|string',
+            'address' => 'sometimes|string',
+            'skills' => 'sometimes|string',
+            'createdAt' => 'sometimes|date',
+            'updatedAt' => 'string|date',
+            'cityId' => 'sometimes|numeric',
+            'specializationId' => 'sometimes|numeric',
+            'experienceId' => 'sometimes|numeric',
+
+            'sortByName' => 'sometimes|in:0,1',
+            'sortBySalaryFrom' => 'sometimes|in:0,1',
+            'sortByCreatedAt' => 'sometimes|in:0,1',
+            'sortByUpdatedAt' => 'sometimes|in:0,1',
         ];
     }
 }

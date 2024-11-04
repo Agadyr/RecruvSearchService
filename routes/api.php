@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VacanciesController;
 use App\Http\Controllers\UsersController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,10 +15,16 @@ use App\Http\Controllers\UsersController;
 |
 */
 
-Route::get('/createOrResetIndex', [VacanciesController::class, 'ReCreateVacanciesIndex']);
-Route::post('/search',[VacanciesController::class, 'searchInArticlesIndex']);
 
-Route::get('/updateAllUsers', [UsersController::class, 'index']);
-Route::post('/createUser', [UsersController::class, 'store']);
-Route::post('/createMessage', [UsersController::class, 'createMessage']);
-Route::post('/giveSuggestions', [UsersController::class, 'giveSuggestions']);
+Route::prefix('users')->group(function () {
+    Route::get('/updateAllUsers', [UsersController::class, 'index']);
+    Route::post('/createUser', [UsersController::class, 'store']);
+    Route::post('/createMessage', [UsersController::class, 'createMessage']);
+    Route::post('/giveSuggestions', [UsersController::class, 'giveSuggestions']);
+});
+
+
+Route::prefix('vacancies')->group(function () {
+    Route::get('/createOrResetIndex', [VacanciesController::class, 'reCreateVacanciesIndex']);
+    Route::get('/searchVacanciesByParams', [VacanciesController::class, 'search']);
+});

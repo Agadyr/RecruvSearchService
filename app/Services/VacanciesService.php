@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class VacanciesService
 {
+    protected array $sorts = ['sortByName', 'sortBySalaryFrom', 'sortByCreatedAt', 'sortByUpdatedAt'];
     public function resetIndexVacancies(): void
     {
         $instance = new \App\Models\Article;
@@ -20,20 +21,15 @@ class VacanciesService
     public function searchByParams(array $params)
     {
         $mustQueries = [];
-        $sort = [];
-        if (isset($params['sortByPrice']) && $params['sortByPrice'] == '0') {
-            $sort[] = ['price' => ['order' => 'asc']];
-        }
-
-        if (isset($params['sortByName']) && $params['sortByName'] == '0') {
-            $sort[] = ['name' => ['order' => 'asc']];
-        }
+        $sort = $this->sortByParams($params);
 
         if (empty($sort)) {
             $sort[] = ['id' => ['order' => 'asc']];
         }
+
+
         foreach ($params as $key => $value) {
-            if ($value !== null && !in_array($key, ['sortByPrice', 'sortByName'])) {
+            if ($value !== null && !in_array($key, $this->sorts)) {
                 if (is_array($value)) {
                     $shouldQueries = [];
                     foreach ($value as $val) {
@@ -64,18 +60,30 @@ class VacanciesService
         if (!isset($arrayArticles[0])) {
             return response()->json(['message' => 'We can not find the product that you requested by params']);
         }
-//        return response()->json($articles);
-        return response()->json($this->articlesToIds($arrayArticles));
+        return response()->json($arrayArticles);
     }
 
-    public function articlesToIds($articles)
+    public function sortByParams($params)
     {
-        $ids = [];
-        foreach ($articles as $article) {
-            $ids[] = $article['id'];
+        $sort = [];
+
+        if (isset($params['sortByName']) && $params['sortByName'] === 0) {
+            $sort[] = ['name' => ['order' => 'asc']];
         }
 
-        return $this->findProductsByIds(($ids));
+        if (isset($params['sortBySalaryFrom']) && $params['sortBySalaryFrom'] === 0) {
+            $sort[] = ['salary_from' => ['order' => 'asc']];
+        }
+
+        if (isset($params['sortByCreatedAt']) && $params['sortByCreatedAt'] === 0) {
+            $sort[] = ['createdAt' => ['order' => 'asc']];
+        }
+
+        if (isset($params['sortByUpdatedAt']) && $params['sortByUpdatedAt'] === 0) {
+            $sort[] = ['updatedAt' => ['order' => 'asc']];
+        }
+
+        return $sort;
     }
 
     public function getVacancies()
