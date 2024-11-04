@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchVacanciesRequest;
+use App\Models\Vacancy;
 use App\Services\VacanciesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class VacanciesController extends Controller
 
     public function create(Request $request)
     {
-        return response()->json($request->all());
+        return Vacancy::addVacancyToIndex($request->all());
+
     }
 }

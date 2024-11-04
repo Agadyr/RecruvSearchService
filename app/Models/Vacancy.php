@@ -70,7 +70,7 @@ class Vacancy extends Model
             'index' => self::INDEX_NAME,
             'body' => [
                 'settings' => [
-                    'number_of_shards' => 1,
+                    'number_of_shards' => 3,
                     'number_of_replicas' => 1,
                 ],
                 'mappings' => [
@@ -80,61 +80,68 @@ class Vacancy extends Model
         ]);
     }
 
-    public static function addAllVacanciesToIndex($products)
+    public static function getVacancyIndexParams($vacancy): array
+    {
+        return [
+            'index' => self::INDEX_NAME,
+            'id' => $vacancy['id'],
+            'type' => '_doc',
+            'body' => [
+                'id' => $vacancy['id'],
+                'name' => $vacancy['name'],
+                'salary_from' => $vacancy['salary_from'],
+                'salary_to' => $vacancy['salary_to'],
+                'salary_type' => $vacancy['salary_type'],
+                'address' => $vacancy['address'],
+                'skills' => $vacancy['skills'],
+                'createdAt' => $vacancy['createdAt'],
+                'updatedAt' => $vacancy['updatedAt'],
+                'cityId' => $vacancy['cityId'],
+                'specializationId' => $vacancy['specializationId'],
+                'experienceId' => $vacancy['experienceId'],
+                'employmentTypeId' => $vacancy['employmentTypeId'],
+            ],
+        ];
+    }
+
+    public static function addVacancyToIndex($vacancy): \Illuminate\Http\JsonResponse
     {
         $client = (new \App\Models\Vacancy)->getElasticSearchClient();
-        foreach ($products as $vacancies) {
-            \Log::info('Индексируем продукт: ' . json_encode($vacancies));
-            try {
-                $params = [
-                    'index' => self::INDEX_NAME,
-                    'id' => $vacancies['id'],
-                    'type' => '_doc',
-                    'body' => [
-                        'id' => $vacancies['id'],
-                        'name' => $vacancies['name'],
-                        'salary_from' => $vacancies['salary_from'],
-                        'salary_to' => $vacancies['salary_to'],
-                        'salary_type' => $vacancies['salary_type'],
-                        'address' => $vacancies['address'],
-                        'skills' => $vacancies['skills'],
-                        'createdAt' => $vacancies['createdAt'],
-                        'updatedAt' => $vacancies['updatedAt'],
-                        'cityId' => $vacancies['cityId'],
-                        'specializationId' => $vacancies['specializationId'],
-                        'experienceId' => $vacancies['experienceId'],
-                        'employmentTypeId' => $vacancies['employmentTypeId'],
-                    ],
-                ];
 
+        \Log::info('Indexing vacancy: ' . json_encode($vacancy));
+
+        try {
+            $params = self::getVacancyIndexParams($vacancy);
+            $client->index($params);
+            \Log::info('Vacancy with ID ' . $vacancy['id'] . ' successfully indexed.');
+
+            return response()->json(['message' => 'Vacancy successfully added to index'], 200);
+        } catch (\Exception $e) {
+            \Log::error("Error indexing vacancy with ID {$vacancy['id']}: {$e->getMessage()}");
+
+            return response()->json(['error' => 'Error indexing vacancy', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public static function addAllVacanciesToIndex($vacancies): \Illuminate\Http\JsonResponse
+    {
+        $client = (new \App\Models\Vacancy)->getElasticSearchClient();
+
+        foreach ($vacancies as $vacancy) {
+//            \Log::info('Indexing vacancy: ' . json_encode($vacancy));
+
+            try {
+                $params = self::getVacancyIndexParams($vacancy);
                 $client->index($params);
-                \Log::info('Вакансия с ID ' . $vacancies['id'] . ' успешно индексирован.');
+//                \Log::info('Vacancy with ID ' . $vacancy['id'] . ' successfully indexed.');
             } catch (\Exception $e) {
-                \Log::error("Ошибка индексации продукта с ID {$vacancies['id']}: {$e->getMessage()}");
+//                \Log::error("Error indexing vacancy with ID {$vacancy['id']}: {$e->getMessage()}");
             }
         }
 
         return response()->json([
-            'message' => 'Все данные были загружены в индекс Vacancies',
+            'message' => 'All vacancies have been successfully indexed.',
         ]);
     }
-
-
-//    public function addToIndex()
-//    {
-//        try {
-//            $params = [
-//                'index' => self::INDEX_NAME,
-//                'type' => '_doc',
-//                'id' => $this->id,
-//                'body' => $this->toArray(),
-//            ];
-//
-//            return $this->getElasticSearchClient()->index($params);
-//        } catch (\Exception $e) {
-//            \Log::error("Ошибка индексации статьи с ID {$this->id}: {$e->getMessage()}");
-//            return false;
-//        }
-//    }
 
 }
