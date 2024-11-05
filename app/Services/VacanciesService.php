@@ -28,34 +28,30 @@ class VacanciesService
             $sort[] = ['id' => ['order' => 'asc']];
         }
 
-
         foreach ($params as $key => $value) {
-            if ($value !== null && !in_array($key, $this->sorts)) {
-                if (is_array($value)) {
-                    $shouldQueries = [];
-                    foreach ($value as $val) {
-                        $shouldQueries[] = ['match' => [$key => $val]];
-                    }
-                    $mustQueries[] = ['bool' => ['should' => $shouldQueries]];
-                } else {
+            if ($value !== null && !in_array($key, $this->sorts) && !in_array($key, ['salary_from', 'salary_to'])) {
                     $mustQueries[] = ['match' => [$key => $value]];
-                }
             }
         }
-        $params = [
+
+        $mustQueries[] = $this->salaryParams($params);
+
+//        return response()->json($mustQueries);
+
+        $searchParams = [
             'index' => \App\Models\Vacancy::INDEX_NAME,
             'size' => 1000,
             'body' => [
                 'query' => [
                     'bool' => [
-                        'must' => $mustQueries,
+                        'must' => $mustQueries
                     ],
                 ],
                 'sort' => $sort
             ],
         ];
 
-        $articles = \App\Models\Vacancy::complexSearch($params);
+        $articles = \App\Models\Vacancy::complexSearch($searchParams);
 
         $arrayArticles = $articles->toArray();
         if (!isset($arrayArticles[0])) {
@@ -63,6 +59,39 @@ class VacanciesService
         }
         return response()->json($arrayArticles);
     }
+
+    public function salaryParams($params)
+    {
+        $salaryQueries = [];
+
+        if (!empty($params['salary_from'])) {
+            $salaryQueries[] = [
+                'range' => [
+                    'salary_from' => ['gte' => $params['salary_from']]
+                ]
+            ];
+        }
+
+        if (!empty($params['salary_to'])) {
+            $salaryQueries[] = [
+                'range' => [
+                    'salary_to' => ['lte' => $params['salary_to']]
+                ]
+            ];
+        }
+
+        if (!empty($salaryQueries)) {
+            return [
+                'bool' => [
+                    'must' => $salaryQueries
+                ]
+            ];
+        }
+
+        return [];
+    }
+
+
 
     public function sortByParams($params)
     {

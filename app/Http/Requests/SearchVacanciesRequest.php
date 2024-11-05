@@ -47,11 +47,10 @@ class SearchVacanciesRequest extends FormRequest
             'salary_to' => 'sometimes|numeric',
             'salary_type' => 'sometimes|string',
             'address' => 'sometimes|string',
-            'skills' => 'sometimes|string',
-            'createdAt' => 'sometimes|date',
-            'updatedAt' => 'string|date',
+            'skills' => 'sometimes',
             'cityId' => 'sometimes|numeric',
             'specializationId' => 'sometimes|numeric',
+            'employmentTypeId' => 'sometime|numeric',
             'experienceId' => 'sometimes|numeric',
 
             'sortByName' => 'sometimes|in:0,1',

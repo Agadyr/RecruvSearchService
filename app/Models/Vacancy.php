@@ -5,6 +5,7 @@ namespace App\Models;
 use Elasticquent\ElasticquentTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Vacancy extends Model
 {
@@ -88,18 +89,18 @@ class Vacancy extends Model
             'type' => '_doc',
             'body' => [
                 'id' => $vacancy['id'],
-                'name' => $vacancy['name'],
-                'salary_from' => $vacancy['salary_from'],
-                'salary_to' => $vacancy['salary_to'],
-                'salary_type' => $vacancy['salary_type'],
-                'address' => $vacancy['address'],
-                'skills' => $vacancy['skills'],
+                'name' => $vacancy['name'] ?? '',
+                'salary_from' => $vacancy['salary_from'] ?? '',
+                'salary_to' => $vacancy['salary_to'] ?? '',
+                'salary_type' => $vacancy['salary_type'] ?? '',
+                'address' => $vacancy['address'] ?? '',
+                'skills' => $vacancy['skills'] ?? '',
                 'createdAt' => $vacancy['createdAt'],
                 'updatedAt' => $vacancy['updatedAt'],
-                'cityId' => $vacancy['cityId'],
-                'specializationId' => $vacancy['specializationId'],
-                'experienceId' => $vacancy['experienceId'],
-                'employmentTypeId' => $vacancy['employmentTypeId'],
+                'cityId' => $vacancy['cityId'] ?? '',
+                'specializationId' => $vacancy['specializationId'] ?? '',
+                'experienceId' => $vacancy['experienceId'] ?? '',
+                'employmentTypeId' => $vacancy['employmentTypeId'] ?? '',
             ],
         ];
     }
@@ -108,10 +109,10 @@ class Vacancy extends Model
     {
         $client = (new \App\Models\Vacancy)->getElasticSearchClient();
 
-        \Log::info('Indexing vacancy: ' . json_encode($vacancy));
-
+        \Log::info($vacancy);
         try {
             $params = self::getVacancyIndexParams($vacancy);
+            $params['id'] = $vacancy['id'];
             $client->index($params);
             \Log::info('Vacancy with ID ' . $vacancy['id'] . ' successfully indexed.');
 
