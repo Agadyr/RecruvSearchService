@@ -52,6 +52,7 @@ class SearchVacanciesRequest extends FormRequest
             'specializationId' => 'sometimes|numeric',
             'employmentTypeId' => 'sometime|numeric',
             'experienceId' => 'sometimes|numeric',
+            'created_at' => 'sometimes|date',
 
             'sortByName' => 'sometimes|in:0,1',
             'sortBySalaryFrom' => 'sometimes|in:0,1',

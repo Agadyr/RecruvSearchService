@@ -19,24 +19,22 @@ class VacanciesService
         \App\Models\Vacancy::addAllVacanciesToIndex($vacancies);
     }
 
-    public function searchByParams(array $params)
+    public function searchByParams(array $params): \Illuminate\Http\JsonResponse
     {
         $mustQueries = [];
         $sort = $this->sortByParams($params);
 
-        if (empty($sort)) {
-            $sort[] = ['id' => ['order' => 'asc']];
-        }
-
         foreach ($params as $key => $value) {
-            if ($value !== null && !in_array($key, $this->sorts) && !in_array($key, ['salary_from', 'salary_to'])) {
+            if ($value !== null && !in_array($key, $this->sorts) && !in_array($key, ['salary_from', 'salary_to', 'created_at'])) {
                     $mustQueries[] = ['match' => [$key => $value]];
             }
         }
 
-        $mustQueries[] = $this->salaryParams($params);
+        $rangeQueries = $this->rangeParams($params);
 
-//        return response()->json($mustQueries);
+        if (!empty($rangeQueries)) {
+            $mustQueries = array_merge($mustQueries, $rangeQueries);
+        }
 
         $searchParams = [
             'index' => \App\Models\Vacancy::INDEX_NAME,
@@ -60,40 +58,48 @@ class VacanciesService
         return response()->json($arrayArticles);
     }
 
-    public function salaryParams($params)
+    public function rangeParams($params): array
     {
-        $salaryQueries = [];
+        $rangeQueries = [];
 
         if (!empty($params['salary_from'])) {
-            $salaryQueries[] = [
+            $rangeQueries[] = [
                 'range' => [
                     'salary_from' => ['gte' => $params['salary_from']]
+                ]
+            ];
+        } else {
+            $rangeQueries[] = [
+                'range' => [
+                    'salary_from' => ['gte' => 0]
                 ]
             ];
         }
 
         if (!empty($params['salary_to'])) {
-            $salaryQueries[] = [
+            $rangeQueries[] = [
                 'range' => [
                     'salary_to' => ['lte' => $params['salary_to']]
                 ]
             ];
         }
 
-        if (!empty($salaryQueries)) {
-            return [
-                'bool' => [
-                    'must' => $salaryQueries
+        if (!empty($params['created_at'])) {
+            $rangeQueries[] = [
+                'range' => [
+                    'createdAt' => [
+                        'gte' => $params['created_at']
+                    ]
                 ]
             ];
         }
 
-        return [];
+        return $rangeQueries;
     }
 
 
 
-    public function sortByParams($params)
+    public function sortByParams($params): array
     {
         $sort = [];
 
@@ -111,6 +117,10 @@ class VacanciesService
 
         if (isset($params['sortByUpdatedAt']) && $params['sortByUpdatedAt'] === 0) {
             $sort[] = ['updatedAt' => ['order' => 'asc']];
+        }
+
+        if (empty($sort)) {
+            $sort[] = ['id' => ['order' => 'asc']];
         }
 
         return $sort;
