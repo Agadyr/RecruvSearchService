@@ -20,6 +20,12 @@ class Vacancy extends Model
         'name' => [
             'type' => 'text',
             'analyzer' => 'standard',
+            'fields' => [
+                'keyword' => [
+                    'type' => 'keyword',
+                    'ignore_above' => 256
+                ]
+            ]
         ],
         'salary_from' => [
             'type' => 'float',

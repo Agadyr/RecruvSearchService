@@ -48,6 +48,7 @@ class VacanciesService
                 'sort' => $sort
             ],
         ];
+//        return response()->json($params);
 
         $articles = \App\Models\Vacancy::complexSearch($searchParams);
 
@@ -103,20 +104,16 @@ class VacanciesService
     {
         $sort = [];
 
-        if (isset($params['sortByName']) && $params['sortByName'] === 0) {
-            $sort[] = ['name' => ['order' => 'asc']];
+        if (isset($params['sortByName']) && $params['sortByName'] === '0') {
+            $sort[] = ['name.keyword' => ['order' => 'asc']];
         }
 
-        if (isset($params['sortBySalaryFrom']) && $params['sortBySalaryFrom'] === 0) {
+        if (isset($params['sortBySalaryFrom']) && $params['sortBySalaryFrom'] === '0') {
             $sort[] = ['salary_from' => ['order' => 'asc']];
         }
 
-        if (isset($params['sortByCreatedAt']) && $params['sortByCreatedAt'] === 0) {
+        if (isset($params['sortByCreatedAt']) && $params['sortByCreatedAt'] === '0') {
             $sort[] = ['createdAt' => ['order' => 'asc']];
-        }
-
-        if (isset($params['sortByUpdatedAt']) && $params['sortByUpdatedAt'] === 0) {
-            $sort[] = ['updatedAt' => ['order' => 'asc']];
         }
 
         if (empty($sort)) {

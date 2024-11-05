@@ -50,14 +50,14 @@ class SearchVacanciesRequest extends FormRequest
             'skills' => 'sometimes',
             'cityId' => 'sometimes|numeric',
             'specializationId' => 'sometimes|numeric',
-            'employmentTypeId' => 'sometime|numeric',
+            'employmentTypeId' => 'sometimes|numeric',
             'experienceId' => 'sometimes|numeric',
             'created_at' => 'sometimes|date',
 
-            'sortByName' => 'sometimes|in:0,1',
-            'sortBySalaryFrom' => 'sometimes|in:0,1',
-            'sortByCreatedAt' => 'sometimes|in:0,1',
-            'sortByUpdatedAt' => 'sometimes|in:0,1',
+            'sortByName' => 'sometimes',
+            'sortBySalaryFrom' => 'sometimes',
+            'sortByCreatedAt' => 'sometimes',
+            'sortByUpdatedAt' => 'sometimes',
         ];
     }
 }
