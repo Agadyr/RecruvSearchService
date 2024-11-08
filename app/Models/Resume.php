@@ -100,7 +100,7 @@ class Resume extends Model
 //            \Log::info('Indexing vacancy: ' . json_encode($vacancy));
 
             try {
-                $params = self::getVacancyIndexParams($resume);
+                $params = self::getIndexParams($resume);
                 $client->index($params);
 //                \Log::info('Vacancy with ID ' . $vacancy['id'] . ' successfully indexed.');
             } catch (\Exception $e) {

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchResumesRequest;
+use App\Http\Requests\SearchVacanciesRequest;
 use App\Services\ResumeService;
 use Illuminate\Http\Request;
 
@@ -16,7 +18,14 @@ class ResumeController extends Controller
 
     public function reCreateVacanciesIndex()
     {
-//        $this->resumeService->getAllResumes();
-        return $this->resumeService->getAllResumes();
+        $resumes = $this->resumeService->resetIndexVacancies();
+        return response()->json($resumes);
+    }
+
+    public function search(SearchResumesRequest $searchResumesRequest)
+    {
+        $params = $searchResumesRequest->validated();
+        $vacancies = $this->resumeService->searchByParams($params);
+//        return response()->json($vacancies);
     }
 }

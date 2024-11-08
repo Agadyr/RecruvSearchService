@@ -6,6 +6,16 @@ use Illuminate\Support\Facades\Http;
 
 class ResumeService
 {
+    public function resetIndexVacancies(): void
+    {
+        $instance = new \App\Models\Resume;
+        if ($instance->getElasticSearchClient()->indices()->exists(['index' => 'resumes'])) {
+            $instance->getElasticSearchClient()->indices()->delete(['index' => 'resumes']);
+        }
+        $resumes = $this->getAllResumes();
+        \App\Models\Resume::createIndex();
+        \App\Models\Resume::addAllVacanciesToIndex($resumes);
+    }
     public function getAllResumes()
     {
         $res = Http::get('http://localhost:3002/api/allResumes');

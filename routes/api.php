@@ -33,4 +33,5 @@ Route::prefix('vacancies')->group(function () {
 
 Route::prefix('/resumes')->group(function () {
     Route::get('/createOrResetIndex', [\App\Http\Controllers\ResumeController::class, 'reCreateVacanciesIndex']);
+    Route::get('/searchResumesByParams', [\App\Http\Controllers\ResumeController::class, 'search']);
 });
