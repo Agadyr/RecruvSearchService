@@ -25,13 +25,14 @@ Route::prefix('users')->group(function () {
 
 
 Route::prefix('vacancies')->group(function () {
-    Route::post('addNewVacancyToIndex', [VacanciesController::class, 'create']);
+    Route::post('/addNewVacancyToIndex', [VacanciesController::class, 'create']);
     Route::get('/createOrResetIndex', [VacanciesController::class, 'reCreateVacanciesIndex']);
     Route::post('/searchVacanciesByParams', [VacanciesController::class, 'search']);
 });
 
 
 Route::prefix('/resumes')->group(function () {
+    Route::post('addNewVacancyToIndex', [\App\Http\Controllers\ResumeController::class, 'create']);
     Route::get('/createOrResetIndex', [\App\Http\Controllers\ResumeController::class, 'reCreateVacanciesIndex']);
     Route::post('/searchResumesByParams', [\App\Http\Controllers\ResumeController::class, 'search']);
 });

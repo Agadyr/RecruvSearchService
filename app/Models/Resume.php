@@ -111,7 +111,7 @@ class Resume extends Model
         ]);
     }
 
-    public static function addVacancyToIndex($resume): \Illuminate\Http\JsonResponse
+    public static function addResumeToIndex($resume): \Illuminate\Http\JsonResponse
     {
         $client = (new \App\Models\Resume)->getElasticSearchClient();
 
