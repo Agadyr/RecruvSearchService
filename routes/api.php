@@ -29,3 +29,8 @@ Route::prefix('vacancies')->group(function () {
     Route::get('/createOrResetIndex', [VacanciesController::class, 'reCreateVacanciesIndex']);
     Route::post('/searchVacanciesByParams', [VacanciesController::class, 'search']);
 });
+
+
+Route::prefix('/resumes')->group(function () {
+    Route::get('/createOrResetIndex', [\App\Http\Controllers\ResumeController::class, 'reCreateVacanciesIndex']);
+});
