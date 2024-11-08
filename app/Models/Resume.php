@@ -111,4 +111,23 @@ class Resume extends Model
         ]);
     }
 
+    public static function addVacancyToIndex($resume): \Illuminate\Http\JsonResponse
+    {
+        $client = (new \App\Models\Resume)->getElasticSearchClient();
+
+        \Log::info($resume);
+        try {
+            $params = self::getIndexParams($resume);
+            $params['id'] = $resume['id'];
+            $client->index($params);
+            \Log::info('Vacancy with ID ' . $resume['id'] . ' successfully indexed.');
+
+            return response()->json(['message' => 'Vacancy successfully added to index'], 200);
+        } catch (\Exception $e) {
+            \Log::error("Error indexing vacancy with ID {$resume['id']}: {$e->getMessage()}");
+
+            return response()->json(['error' => 'Error indexing vacancy', 'details' => $e->getMessage()], 500);
+        }
+    }
+
 }
