@@ -77,8 +77,6 @@ class Resume extends Model
             'type' => '_doc',
             'body' => [
                 'id' => $data['id'],
-                'first_name' => $data['first_name'] ?? '',
-                'last_name' => $data['last_name'] ?? '',
                 'position' => $data['position'] ?? '',
                 'salary' => $data['salary'] ?? '',
                 'skills' => $data['skills'] ?? '',

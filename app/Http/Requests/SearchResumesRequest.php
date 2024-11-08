@@ -25,13 +25,14 @@ class SearchResumesRequest extends FormRequest
     {
         return [
             'id' => 'sometimes|numeric',
-            'first_name' => 'sometimes|string|max:255',
-            'last_name' => 'sometimes|string|max:255',
             'position' => 'sometimes|string|max:255',
             'salary' => 'sometimes|numeric',
+            'salary_from' => 'sometimes|numeric',
+            'salary_to' => 'sometimes|numeric',
             'cityId' => 'sometimes|numeric',
             'userId' => 'sometimes|numeric',
             'citizenship' => 'sometimes|numeric',
+            'created_at' => 'sometimes|date',
 
             'sortBySalary' => 'sometimes',
             'sortByCreatedAt' => 'sometimes',
