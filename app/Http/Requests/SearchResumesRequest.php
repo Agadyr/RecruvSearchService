@@ -29,6 +29,7 @@ class SearchResumesRequest extends FormRequest
             'salary' => 'sometimes|numeric',
             'salary_from' => 'sometimes|numeric',
             'salary_to' => 'sometimes|numeric',
+            'skills' => 'sometimes|array',
             'cityId' => 'sometimes|numeric',
             'userId' => 'sometimes|numeric',
             'citizenship' => 'sometimes|numeric',
@@ -36,7 +37,11 @@ class SearchResumesRequest extends FormRequest
 
             'sortBySalary' => 'sometimes',
             'sortByCreatedAt' => 'sometimes',
-            'sortByUpdatedAt' => 'sometimes',
+
+            'experience' => 'sometimes|string|max:1000', // Experience as a single string field
+            'foreignLanguages' => 'sometimes|string|max:255', // Foreign languages as a string (names of languages)
+            'educationLevel' => 'sometimes|string|max:100', // Education level validation
+            'employmentType' => 'sometimes|array'
         ];
     }
 }

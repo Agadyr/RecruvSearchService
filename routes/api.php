@@ -35,4 +35,5 @@ Route::prefix('/resumes')->group(function () {
     Route::post('addNewVacancyToIndex', [\App\Http\Controllers\ResumeController::class, 'create']);
     Route::get('/createOrResetIndex', [\App\Http\Controllers\ResumeController::class, 'reCreateVacanciesIndex']);
     Route::post('/searchResumesByParams', [\App\Http\Controllers\ResumeController::class, 'search']);
+    Route::post('/sendPdfResume', [\App\Http\Controllers\ResumeController::class, 'extractPdf']);
 });

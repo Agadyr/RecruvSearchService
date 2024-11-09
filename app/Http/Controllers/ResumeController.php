@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchResumesRequest;
 use App\Models\Resume;
-use App\Models\Vacancy;
 use App\Services\ResumeService;
 use Illuminate\Http\Request;
+use Smalot\PdfParser\Parser;
 
 class ResumeController extends Controller
 {
     protected $resumeService;
+    protected $parser;
 
     public function __construct(ResumeService $resumeService)
     {
         $this->resumeService = $resumeService;
+        $this->parser = new Parser();
     }
 
     public function reCreateVacanciesIndex()
@@ -33,5 +35,12 @@ class ResumeController extends Controller
     {
         return Resume::addResumeToIndex($request->all());
 
+    }
+
+    public function extractPdf(Request $request)
+    {
+        $res = $this->resumeService->extractPdfToResume($request->file('filepath'), $this->parser);
+
+        return response()->json($res);
     }
 }
